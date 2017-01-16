@@ -60,11 +60,11 @@ class TwitterChat:
 			message = to + " " + message
 		try:
 			if image:
-				self.api.update_with_media(status=message, filename=image)
+				tweet = self.api.update_with_media(status=message, filename=image)
 			else:
-				self.api.update_status(status=message)
+				tweet = self.api.update_status(status=message)
 			print "Message sent"
-			return 'OK'
+			return "OK"
 		except Exception as e:
 			print "Message not sent"
 			print sys.exc_info()
@@ -77,12 +77,12 @@ class TwitterChat:
 			message = to + " " + message
 		try:
 			if image:
-				self.api.update_with_media(status=message, filename=image, in_reply_to_status=id)
+				tweet = self.api.update_with_media(image, message, id)
 			else:
 				print "Using reply"
-				self.api.update_status(status=message, in_reply_to_status=id)
+				tweet = self.api.update_status(message, id)
 			print "Message replied"
-			return 'OK'
+			return "OK"
 		except Exception as e:
 			print "Message not sent"
 			print sys.exc_info()

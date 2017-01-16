@@ -1,3 +1,4 @@
+import sys
 import json
 import time
 import ConfigParser
@@ -43,7 +44,7 @@ class TwitterWeb(SeleniumHelper):
 	POST_COMMENT_BLOCKS = '.UFICommentContent'
 	POST_COMMENT_NAME = '.UFICommentActorName'
 	POST_COMMENT_TEXT = '.UFICommentBody'
-	REPLY_BUTTON = '[data-testid="reply"]'
+	REPLY_BUTTON = "a[href*='reply']"
 	REPLY_SEND_BUTTON = '[data-testid="tweet-button"]'
 
 	MESSAGES_LIST = '.webMessengerMessageGroup'
@@ -135,8 +136,8 @@ class TwitterWeb(SeleniumHelper):
 		self.driver.quit()
 
 	def start(self):
-		print 'Logging in'
 		self.login()
+		print 'Logged in'
 		self.saveScreenshot()
 
 	def getInfo(self, url):
@@ -179,6 +180,7 @@ class TwitterWeb(SeleniumHelper):
 				message = to + " " + message
 			url = self.WRITE_URL
 			print 'Loading message page ...'
+			print url
 			self.loadPage(url)
 			print 'Page loaded'
 			print 'Typing'
@@ -186,14 +188,15 @@ class TwitterWeb(SeleniumHelper):
 				self.saveScreenshot('screenshot2.png');
 			textarea = self.waitShowElement(self.MESSAGE_TEXTAREA)
 			textarea.send_keys(message)
-			# textarea.send_keys(Keys.TAB)
-			# textarea.send_keys(Keys.RETURN)
-			
-			button = self.getElement(self.SUBMIT_BUTTON)
-			self.click(button)
+
+			textarea.submit()
+			# button = self.getElement(self.SUBMIT_BUTTON)
+			# print "button: ", button
+			# self.click(button)
 			print 'Sent'
 			# textarea.send_keys('\r\n')
-			# self.saveScreenshot('screenshot3.png');
+			if self.DEBUG:
+				self.saveScreenshot('screenshot3.png');
 			return 'OK'
 		except Exception as e:
 			print "Message not sent"
@@ -207,23 +210,24 @@ class TwitterWeb(SeleniumHelper):
 				message = to + " " + message
 			url = self.REPLY_URL + id
 			print 'Loading message page ...'
+			print url
 			self.loadPage(url)
 			print 'Page loaded'
 			print 'Typing'
 			if self.DEBUG:
 				self.saveScreenshot('screenshot2.png');
 			button = self.waitShowElement(self.REPLY_BUTTON)
+
 			self.click(button)
 			textarea = self.waitShowElement(self.MESSAGE_TEXTAREA)
+			textarea.clear()
 			textarea.send_keys(message)
-			# textarea.send_keys(Keys.TAB)
-			# textarea.send_keys(Keys.RETURN)
-			# textarea.submit()
-			button = self.getElement(self.REPLY_SEND_BUTTON)
-			self.click(button)
+			textarea.submit()
+			# button = self.getElement(self.REPLY_SEND_BUTTON)
+			# self.click(button)
 			print 'Sent'
-			# textarea.send_keys('\r\n')
-			# self.saveScreenshot('screenshot3.png');
+			if self.DEBUG:
+				self.saveScreenshot('screenshot3.png');
 			return 'OK'
 		except Exception as e:
 			print "Message not sent"
@@ -279,7 +283,7 @@ class TwitterWeb(SeleniumHelper):
 		# self.client = fbchat.Client(self.LOGIN_USER_VALUE, self.LOGIN_PASS_VALUE)
 		profile = webdriver.FirefoxProfile()
 		profile.set_preference("javascript.enabled", False)
-		self.driver = webdriver.Firefox(profile)
-		# self.driver = webdriver.PhantomJS()
+		# self.driver = webdriver.Firefox(profile)
+		self.driver = webdriver.PhantomJS(service_args=['--ssl-protocol=any'])
 		# self.driver = webdriver.Chrome('./chromedriver')
 		self.driver.set_page_load_timeout(self.TIMEOUT)
