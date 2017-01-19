@@ -28,6 +28,7 @@ class TwitterWeb(SeleniumHelper):
 	LOGIN_USER_PATH = '[name="session[username_or_email]"]'
 	LOGIN_PASS_PATH = '#session\\[password\\]'
 	LOGIN_SUBMIT_PATH = '#loginbutton > input[type="submit"]'
+	LOGIN_CHALLENGE = '#challenge_response'
 	SEARCH_BAR_PATH = 'input.inputtext'
 	SEARCH_URL = 'https://www.facebook.com/search/str/'
 	SEARCH_PEOPLE_URL = '/keywords_users?ref=top_filter'
@@ -138,6 +139,13 @@ class TwitterWeb(SeleniumHelper):
 	def start(self):
 		self.login()
 		print 'Logged in'
+
+		userInput = self.waitShowElement(self.LOGIN_CHALLENGE, 15)
+		if userInput:
+			print 'challenged'
+			userInput.send_keys(self.LOGIN_PHONE)
+			self.submitForm(userInput)
+
 		self.saveScreenshot()
 
 	def getInfo(self, url):
@@ -280,6 +288,7 @@ class TwitterWeb(SeleniumHelper):
 		config.read(filename)
 		self.LOGIN_USER_VALUE = config.get('credentials', 'login_user_value')
 		self.LOGIN_PASS_VALUE = config.get('credentials', 'login_pass_value')
+		self.LOGIN_PHONE = config.get('credentials', 'phone_number')
 		# self.client = fbchat.Client(self.LOGIN_USER_VALUE, self.LOGIN_PASS_VALUE)
 		profile = webdriver.FirefoxProfile()
 		profile.set_preference("javascript.enabled", False)
