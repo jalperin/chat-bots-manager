@@ -146,12 +146,13 @@ with litecon:
 
             else:
                 ret = bot[method].send_message(tw)
-            ret = "OK"
+
             if ret == "OK":
                 # get the last tweet
                 tweet = api.user_timeline(id=main_user_id, count = 1)[0]
                 print "Just tweeted: %s" % tweet.id
                 assert(tweet.text == tw)
+
             else:
                 print ret
                 exit(1)
