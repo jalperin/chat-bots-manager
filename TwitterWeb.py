@@ -220,6 +220,7 @@ class TwitterWeb(SeleniumHelper):
 				self.log('submittedtweet')
 			return 'OK'
 		except Exception as e:
+			sefl.log('send_message_exception')
 			print "Message not sent"
 			print sys.exc_info()
 			return str(e)
@@ -260,6 +261,7 @@ class TwitterWeb(SeleniumHelper):
 				self.log('submittedreply')
 			return 'OK'
 		except Exception as e:
+			sefl.log('reply_message_exception')
 			print "Message not sent"
 			print sys.exc_info()
 			return str(e)
