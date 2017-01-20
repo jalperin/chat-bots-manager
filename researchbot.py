@@ -153,12 +153,15 @@ with litecon:
                 print "Just tweeted: %s" % tweet.id
                 assert(tweet.text == tw)
 
+                litecur.execute("INSERT INTO question_data (user_id_str, time_sent, variant, method, tweet_id) VALUES (?,?,?,?,?)", (user_id_str, datetime.datetime.now().isoformat(), variant, method, tweet.id_str))
+                litecon.commit()
             else:
-                print ret
-                exit(1)
+                print "PROBLEM: %s" % ret
+                print "screen_name: %s" % screen_name
+                print "tweet_id: %s" % tweet_id
 
-            litecur.execute("INSERT INTO question_data (user_id_str, time_sent, variant, method, tweet_id) VALUES (?,?,?,?,?)", (user_id_str, datetime.datetime.now().isoformat(), variant, method, tweet.id_str))
-            litecon.commit()
+                litecur.execute("INSERT INTO question_data (user_id_str, time_sent, variant, method) VALUES (?,?,?,?,?)", (user_id_str, datetime.datetime.now().isoformat(), -1, method))
+                litecon.commit()
 
         except Exception as e: 
             print sys.exc_info()

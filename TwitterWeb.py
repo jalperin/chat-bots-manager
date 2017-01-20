@@ -195,17 +195,22 @@ class TwitterWeb(SeleniumHelper):
 			if to:
 				message = to + " " + message
 			url = self.WRITE_URL
-			print 'Loading message page ...'
+			print 'Loading message page ...', 
 			print url
 			self.loadPage(url)
 			print 'Page loaded'
 			print 'Typing'
 			if self.DEBUG:
 				self.log('typetweet')
-			textarea = self.waitShowElement(self.MESSAGE_TEXTAREA)
-			textarea.send_keys(message)
+			textarea = self.waitShowElement(self.MESSAGE_TEXTAREA, 30)
+			if textarea: 
+				textarea.send_keys(message)
 
-			textarea.submit()
+				textarea.submit()
+			else:
+				if self.DEBUG:
+					self.log('problemtweet')				
+				return "Not OK: " + self.driver.current_url
 			# button = self.getElement(self.SUBMIT_BUTTON)
 			# print "button: ", button
 			# self.click(button)
@@ -232,10 +237,19 @@ class TwitterWeb(SeleniumHelper):
 			print 'Typing'
 			if self.DEBUG:
 				self.log('typereply')
-			button = self.waitShowElement(self.REPLY_BUTTON)
+			button = self.waitShowElement(self.REPLY_BUTTON, 30)
+			if not button: 
+				if self.DEBUG:
+					self.log('problemreplybutton')				
+				return "Not OK: " + self.driver.current_url
 
 			self.click(button)
-			textarea = self.waitShowElement(self.MESSAGE_TEXTAREA)
+			textarea = self.waitShowElement(self.MESSAGE_TEXTAREA, 30)
+			if not textarea: 
+				if self.DEBUG:
+					self.log('problemreply')				
+				return "Not OK: " + self.driver.current_url
+
 			textarea.clear()
 			textarea.send_keys(message)
 			textarea.submit()
