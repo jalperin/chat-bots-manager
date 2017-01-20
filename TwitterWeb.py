@@ -10,7 +10,7 @@ class TwitterWeb(SeleniumHelper):
 	LOGIN_PASS_VALUE = ''
 	TIMEOUT = 7
 
-	DEBUG = False
+	DEBUG = True
 	INITIAL_URL = 'https://mobile.twitter.com/login'
 	WRITE_URL = 'https://mobile.twitter.com/compose/tweet'
 	REPLY_URL = 'https://mobile.twitter.com/a/status/'
@@ -61,6 +61,11 @@ class TwitterWeb(SeleniumHelper):
 	baseUrl = ''
 	argv = None
 	client = None
+
+	def log(self, s):
+    		self.saveScreenshot('%s.png' % s)
+    		with open('%s.html' % s, 'wb') as f:
+        		f.write(self.driver.page_source.encode('utf8'))
 
 	def bot_exec(self, section, action, params):
 		exit = {'status': 'OK', 'data': 'test'}
@@ -132,6 +137,7 @@ class TwitterWeb(SeleniumHelper):
 		passInput = self.getElement(self.LOGIN_PASS_PATH)
 		passInput.send_keys(self.LOGIN_PASS_VALUE)
 		self.submitForm(passInput)
+		self.log('submittedlogin')
 
 	def close(self):
 		self.driver.quit()
@@ -143,8 +149,10 @@ class TwitterWeb(SeleniumHelper):
 		userInput = self.waitShowElement(self.LOGIN_CHALLENGE, 15)
 		if userInput:
 			print 'challenged'
+			self.log('gotchallenged')
 			userInput.send_keys(self.LOGIN_PHONE)
 			self.submitForm(userInput)
+			self.log('submittedchallenge')
 
 		self.saveScreenshot()
 
@@ -193,7 +201,7 @@ class TwitterWeb(SeleniumHelper):
 			print 'Page loaded'
 			print 'Typing'
 			if self.DEBUG:
-				self.saveScreenshot('screenshot2.png');
+				self.log('typetweet')
 			textarea = self.waitShowElement(self.MESSAGE_TEXTAREA)
 			textarea.send_keys(message)
 
@@ -204,7 +212,7 @@ class TwitterWeb(SeleniumHelper):
 			print 'Sent'
 			# textarea.send_keys('\r\n')
 			if self.DEBUG:
-				self.saveScreenshot('screenshot3.png');
+				self.log('submittedtweet')
 			return 'OK'
 		except Exception as e:
 			print "Message not sent"
@@ -223,7 +231,7 @@ class TwitterWeb(SeleniumHelper):
 			print 'Page loaded'
 			print 'Typing'
 			if self.DEBUG:
-				self.saveScreenshot('screenshot2.png');
+				self.log('typereply')
 			button = self.waitShowElement(self.REPLY_BUTTON)
 
 			self.click(button)
@@ -235,7 +243,7 @@ class TwitterWeb(SeleniumHelper):
 			# self.click(button)
 			print 'Sent'
 			if self.DEBUG:
-				self.saveScreenshot('screenshot3.png');
+				self.log('submittedreply')
 			return 'OK'
 		except Exception as e:
 			print "Message not sent"
