@@ -140,6 +140,7 @@ with litecon:
             
     	try: 
             method = random.choice(['sel', 'api'])
+            method = 'sel'
 
             if in_reply_to_status_id: 
                 ret = bot[method].reply_message(tw, str(in_reply_to_status_id))
@@ -150,8 +151,13 @@ with litecon:
             if ret == "OK":
                 # get the last tweet
                 tweet = api.user_timeline(id=main_user_id, count = 1)[0]
+                try: 
+                    assert(tweet.text == tw)
+                except: 
+                    sleep(45)
+                    tweet = api.user_timeline(id=main_user_id, count = 1)[0]
+
                 print "Just tweeted: %s" % tweet.id
-                assert(tweet.text == tw)
 
                 litecur.execute("INSERT INTO question_data (user_id_str, time_sent, variant, method, tweet_id) VALUES (?,?,?,?,?)", (user_id_str, datetime.datetime.now().isoformat(), variant, method, tweet.id_str))
                 litecon.commit()
@@ -160,7 +166,7 @@ with litecon:
                 print "screen_name: %s" % screen_name
                 print "tweet_id: %s" % tweet_id
 
-                litecur.execute("INSERT INTO question_data (user_id_str, time_sent, variant, method) VALUES (?,?,?,?,?)", (user_id_str, datetime.datetime.now().isoformat(), -1, method))
+                litecur.execute("INSERT INTO question_data (user_id_str, time_sent, variant, method) VALUES (?,?,?,?)", (user_id_str, datetime.datetime.now().isoformat(), -1, method))
                 litecon.commit()
 
         except Exception as e: 
@@ -169,10 +175,11 @@ with litecon:
             print datetime.datetime.now().isoformat()
             raise
 
-        time.sleep(random.randrange(5*60,7*60))
+        time.sleep(random.randrange(3*60,5*60))
 
         if datetime.datetime.now().hour == 4:
             # even bots go to bed
             api.update_status('Goodnight @juancommander. %s' % datetime.datetime.now().isoformat())
             time.sleep(60*60*6)
+            bot['sel'].start()
         
