@@ -178,7 +178,7 @@ with litecon:
         time.sleep(random.randrange(3*60,5*60))
 
         # if datetime.datetime.now().hour == 4:
-        if i % 125 == 0:
+        if (i+1) % 125 == 0:
             # even bots go to bed
             api.update_status('I need a break, @juancommander. %s' % datetime.datetime.now().isoformat())
             del bot['sel']
