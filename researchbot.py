@@ -181,6 +181,8 @@ with litecon:
         if i % 125 == 0:
             # even bots go to bed
             api.update_status('I need a break, @juancommander. %s' % datetime.datetime.now().isoformat())
+            del bot['sel']
             time.sleep(60*60*8)
+            bot['sel'] = TwitterWeb('twitter-config')
             bot['sel'].start()
        
